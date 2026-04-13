@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: adservice
+  labels:
+    app.kubernetes.io/name: adservice
+    app.kubernetes.io/instance: adservice
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique
+spec:
+  type: ClusterIP  
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: adservice
+    app.kubernetes.io/instance: adservice
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cartservice
+  labels:
+    app.kubernetes.io/name: cartservice
+    app.kubernetes.io/instance: cartservice
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique
+spec:
+  type: ClusterIP
+  ports:
+    - name: grpc
+      port: 7070
+      targetPort: 7070
+  selector:
+    app.kubernetes.io/name: cartservice
+    app.kubernetes.io/instance: cartservice
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique

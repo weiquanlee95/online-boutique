@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadgenerator
+  labels:
+    app.kubernetes.io/name: loadgenerator
+    app.kubernetes.io/instance: loadgenerator
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique
+spec:
+  type: ClusterIP  
+  ports:
+  - name: grpc
+    port: 5000
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: loadgenerator
+    app.kubernetes.io/instance: loadgenerator
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique

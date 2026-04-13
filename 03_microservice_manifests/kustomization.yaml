@@ -1,0 +1,60 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # adservice
+  - adservice/01_service_account.yaml
+  - adservice/02_configmap.yaml
+  - adservice/03_deployment.yaml
+  - adservice/04_clusterip_service.yaml
+  # cartservice
+  # - cartservice/01_service_account.yaml
+  # - cartservice/02_configmap.yaml
+  - cartservice/03_deployment.yaml
+  # - cartservice/04_clusterip_service.yaml
+  # checkoutservice
+  - checkoutservice/01_service_account.yaml
+  - checkoutservice/02_configmap.yaml
+  - checkoutservice/03_deployment.yaml
+  - checkoutservice/04_clusterip_service.yaml
+  # currencyservice
+  - currencyservice/01_service_account.yaml
+  - currencyservice/02_configmap.yaml
+  - currencyservice/03_deployment.yaml
+  - currencyservice/04_clusterip_service.yaml
+  # emailservice
+  - emailservice/01_service_account.yaml
+  - emailservice/02_configmap.yaml
+  - emailservice/03_deployment.yaml
+  - emailservice/04_clusterip_service.yaml
+  # frontend
+  - frontend/01_service_account.yaml
+  - frontend/02_configmap.yaml
+  - frontend/03_deployment.yaml
+  - frontend/04_clusterip_service.yaml
+  - frontend/05_ingress.yaml
+  # loadgenerator
+  - loadgenerator/01_service_account.yaml
+  - loadgenerator/02_configmap.yaml
+  - loadgenerator/03_deployment.yaml
+  - loadgenerator/04_clusterip_service.yaml
+  # paymentservice
+  - paymentservice/01_service_account.yaml
+  - paymentservice/02_configmap.yaml
+  - paymentservice/03_deployment.yaml
+  - paymentservice/04_clusterip_service.yaml
+  # productcatalogservice
+  - productcatalogservice/01_service_account.yaml
+  - productcatalogservice/02_configmap.yaml
+  - productcatalogservice/03_deployment.yaml
+  - productcatalogservice/04_clusterip_service.yaml
+  # recommadationservice
+  - recommadationservice/01_service_account.yaml
+  - recommadationservice/02_configmap.yaml
+  - recommadationservice/03_deployment.yaml
+  - recommadationservice/04_clusterip_service.yaml
+  # shippingservice
+  - shippingservice/01_service_account.yaml
+  - shippingservice/02_configmap.yaml
+  - shippingservice/03_deployment.yaml
+  - shippingservice/04_clusterip_service.yaml

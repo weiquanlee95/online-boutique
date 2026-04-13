@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: emailservice
+data:
+  PORT: "8080"
+  DISABLE_PROFILER: "1"

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  labels:
+    app.kubernetes.io/name: currencyservice
+    app.kubernetes.io/instance: currencyservice
+    app.kubernetes.io/component: service
+    app.kubernetes.io/owner: online-boutique
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: currencyservice
+      app.kubernetes.io/instance: currencyservice
+      app.kubernetes.io/component: service
+      app.kubernetes.io/owner: online-boutique
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: currencyservice
+        app.kubernetes.io/instance: currencyservice
+        app.kubernetes.io/component: service
+        app.kubernetes.io/owner: online-boutique
+    spec:
+      serviceAccountName: currencyservice
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: currencyservice
+          envFrom:
+            - configMapRef:
+                name: currencyservice
+          securityContext:
+            capabilities:
+              add:
+              - NET_BIND_SERVICE
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: 927749346049.dkr.ecr.ap-southeast-1.amazonaws.com/online-boutique/currencyservice:v0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: grpc
+            containerPort: 7000
+            protocol: TCP
+          readinessProbe:
+            grpc:
+              port: 7000
+          livenessProbe:
+            grpc:
+              port: 7000
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 128m
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cartservice
+data:
+  REDIS_ADDR: "online-boutique-dev-checkout-redis.btpalh.0001.apse1.cache.amazonaws.com:6379"
+
+
+
+
