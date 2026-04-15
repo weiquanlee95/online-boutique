@@ -18,3 +18,4 @@ __pycache__/
 # IDE
 .idea/
 .vscode/
+src/adservice/gradle/wrapper/gradle-8.14.4-bin.zip

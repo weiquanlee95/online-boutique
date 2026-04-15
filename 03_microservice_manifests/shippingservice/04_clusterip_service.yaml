@@ -11,8 +11,8 @@ spec:
   type: ClusterIP  
   ports:
   - name: grpc
-    port: 5000
-    targetPort: 8080
+    port: 50051
+    targetPort: grpc
   selector:
     app.kubernetes.io/name: shippingservice
     app.kubernetes.io/instance: shippingservice

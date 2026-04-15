@@ -10,10 +10,8 @@ metadata:
 spec:
   type: ClusterIP  
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
-      name: http
+    - port: 9555
+      targetPort: 9555
   selector:
     app.kubernetes.io/name: adservice
     app.kubernetes.io/instance: adservice

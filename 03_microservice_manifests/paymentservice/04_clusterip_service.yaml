@@ -10,9 +10,8 @@ metadata:
 spec:
   type: ClusterIP  
   ports:
-  - name: grpc
-    port: 5000
-    targetPort: 8080
+  - port: 50051
+    targetPort: 50051
   selector:
     app.kubernetes.io/name: paymentservice
     app.kubernetes.io/instance: paymentservice

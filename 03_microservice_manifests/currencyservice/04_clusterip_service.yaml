@@ -10,10 +10,8 @@ metadata:
 spec:
   type: ClusterIP  
   ports:
-    - port: 80
-      targetPort: http
-      protocol: TCP
-      name: http
+    - port: 7000
+      targetPort: 7000
   selector:
     app.kubernetes.io/name: currencyservice
     app.kubernetes.io/instance: currencyservice

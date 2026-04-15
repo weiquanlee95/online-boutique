@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: 927749346049.dkr.ecr.ap-southeast-1.amazonaws.com/online-boutique/cartservice:v0.0
+        image: 927749346049.dkr.ecr.ap-southeast-1.amazonaws.com/online-boutique/cartservice:v0.1
         ports:
         - containerPort: 7070
         env:

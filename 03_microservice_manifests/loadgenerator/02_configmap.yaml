@@ -4,3 +4,5 @@ metadata:
   name: loadgenerator
 data:
   FRONTEND_ADDR: "frontend:80"
+  USERS: "500"
+  RATE: "5"

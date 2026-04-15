@@ -44,7 +44,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
-          image: 927749346049.dkr.ecr.ap-southeast-1.amazonaws.com/online-boutique/adservice:v0.0
+          image: 927749346049.dkr.ecr.ap-southeast-1.amazonaws.com/online-boutique/adservice:v0.1
           imagePullPolicy: IfNotPresent
           ports:
           - name: grpc
