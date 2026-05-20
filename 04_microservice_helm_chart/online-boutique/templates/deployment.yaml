@@ -1,0 +1,116 @@
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+{{- $spotOnly := default $.Values.global.spotOnly $svc.spotOnly }}
+{{- $podSec := default $.Values.global.podSecurityContext $svc.podSecurityContext }}
+{{- $ctrSec := default $.Values.global.containerSecurityContext $svc.containerSecurityContext }}
+{{- $containerName := default $name $svc.containerName }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "ob.labels" (dict "name" $name "component" "service" "root" $) | nindent 4 }}
+spec:
+  replicas: {{ $svc.replicas }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "ob.selectorLabels" (dict "name" $name "root" $) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ob.selectorLabels" (dict "name" $name "root" $) | nindent 8 }}
+    spec:
+      {{- if $spotOnly }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ $name }}
+              app.kubernetes.io/component: service
+              app.kubernetes.io/instance: {{ $name }}
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ $name }}
+              app.kubernetes.io/component: service
+              app.kubernetes.io/instance: {{ $name }}
+      nodeSelector:
+        karpenter.sh/capacity-type: spot
+      {{- end }}
+      serviceAccountName: {{ $name }}
+      {{- with $svc.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ . }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $podSec | nindent 8 }}
+      containers:
+        - name: {{ $containerName }}
+          image: {{ include "ob.image" (dict "svc" $svc "root" $) }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          {{- if $svc.env }}
+          envFrom:
+            - configMapRef:
+                name: {{ $name }}
+          {{- end }}
+          securityContext:
+            {{- toYaml $ctrSec | nindent 12 }}
+          ports:
+            - {{- if $svc.port.name }} name: {{ $svc.port.name }}{{ end }}
+              containerPort: {{ $svc.port.containerPort }}
+              protocol: {{ default "TCP" $svc.port.protocol }}
+          {{- if eq (default "none" $svc.probe.type) "grpc" }}
+          readinessProbe:
+            grpc:
+              port: {{ $svc.probe.port }}
+            {{- with $svc.probe.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+          livenessProbe:
+            grpc:
+              port: {{ $svc.probe.port }}
+            {{- with $svc.probe.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+          {{- else if eq $svc.probe.type "http" }}
+          readinessProbe:
+            httpGet:
+              path: {{ $svc.probe.path }}
+              port: {{ $svc.probe.port }}
+            {{- with $svc.probe.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ $svc.probe.path }}
+              port: {{ $svc.probe.port }}
+            {{- with $svc.probe.initialDelaySeconds }}
+            initialDelaySeconds: {{ . }}
+            {{- end }}
+          {{- else if eq $svc.probe.type "tcp" }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ $svc.probe.port }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ $svc.probe.port }}
+          {{- end }}
+          resources:
+            {{- include "ob.resources" (dict "svc" $svc "root" $) | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir:
+            medium: Memory
+{{- end }}
+{{- end }}

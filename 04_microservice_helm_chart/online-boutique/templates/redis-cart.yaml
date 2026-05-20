@@ -1,0 +1,65 @@
+{{- if .Values.redisCart.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-cart
+  labels:
+    app: redis-cart
+spec:
+  selector:
+    matchLabels:
+      app: redis-cart
+  template:
+    metadata:
+      labels:
+        app: redis-cart
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: redis
+          image: {{ .Values.redisCart.image }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            privileged: false
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: {{ .Values.redisCart.port }}
+          readinessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: {{ .Values.redisCart.port }}
+          livenessProbe:
+            periodSeconds: 5
+            tcpSocket:
+              port: {{ .Values.redisCart.port }}
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+          resources:
+            {{- toYaml .Values.redisCart.resources | nindent 12 }}
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cart
+  labels:
+    app: redis-cart
+spec:
+  type: ClusterIP
+  selector:
+    app: redis-cart
+  ports:
+    - name: tcp-redis
+      port: {{ .Values.redisCart.port }}
+      targetPort: {{ .Values.redisCart.port }}
+{{- end }}

@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: emailservice-pdb
+  namespace: default
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: emailservice
+      app.kubernetes.io/instance: emailservice
+      app.kubernetes.io/component: service
+      app.kubernetes.io/owner: online-boutique

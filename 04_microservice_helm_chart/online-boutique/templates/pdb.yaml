@@ -1,0 +1,19 @@
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+{{- $pdb := merge (default dict $svc.pdb) $.Values.global.pdb }}
+{{- if $pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "ob.labels" (dict "name" $name "component" "service" "root" $) | nindent 4 }}
+spec:
+  minAvailable: {{ $pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "ob.selectorLabels" (dict "name" $name "root" $) | nindent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}

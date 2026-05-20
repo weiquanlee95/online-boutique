@@ -6,24 +6,12 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 6.20"
     }
-
-    helm = {
-      source  = "hashicorp/helm"
-      #version = ">= 3.0"
-      version = "~> 3.0"
-    }
-
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.28"
-    }
   }
-
 
   # Remote backend configuration using S3 
   backend "s3" {
     bucket         = "online-boutique-dev-tfstate-927749346049-ap-southeast-1-an"         
-    key            = "karpenter/dev/terraform.tfstate"            
+    key            = "metrics-server/dev/terraform.tfstate"            
     region         = "ap-southeast-1"                            
     encrypt        = true                                   
     use_lockfile   = true     

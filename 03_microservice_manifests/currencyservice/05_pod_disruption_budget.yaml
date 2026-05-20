@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: currencyservice-pdb
+  namespace: default
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: currencyservice
+      app.kubernetes.io/instance: currencyservice
+      app.kubernetes.io/component: service
+      app.kubernetes.io/owner: online-boutique

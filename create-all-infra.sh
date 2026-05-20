@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -9,54 +9,21 @@ echo "============================================================"
 echo
 
 # ---------------------------------------------------------------
-# STEP 1: Create VPC
+# STEP 1: Create VPC + EKS + Karpenter + NodePools
 # ---------------------------------------------------------------
 echo "==============================="
-echo "STEP 1: Create VPC using Terraform"
+echo "STEP 1: Create Cluster Environment"
 echo "==============================="
-cd "$SCRIPT_DIR/01_EKS_cluster_environment/01_VPC_terraform-manifests"
-terraform init
-terraform apply -auto-approve
-echo "✅ VPC created successfully!"
+cd "$SCRIPT_DIR/01_EKS_cluster_environment"
+./create-cluster-with-karpenter.sh
+echo "✅ Cluster environment created successfully!"
 
 # ---------------------------------------------------------------
-# STEP 2: Create EKS Cluster with Addons
+# STEP 2: Create AWS Data Plane (Redis, RDS, SQS, etc.)
 # ---------------------------------------------------------------
 echo
 echo "==============================="
-echo "STEP 2: Create EKS Cluster using Terraform"
-echo "==============================="
-cd "$SCRIPT_DIR/01_EKS_cluster_environment/02_EKS_terraform-manifests_with_addons"
-terraform init
-terraform apply -auto-approve
-echo "✅ EKS Cluster created successfully!"
-
-# ---------------------------------------------------------------
-# STEP 3: Configure kubeconfig
-# ---------------------------------------------------------------
-# echo
-# echo "==============================="
-# echo "STEP 3: Configure kubeconfig"
-# echo "==============================="
-# KUBECONFIG_CMD=$(terraform output -raw to_configure_kubectl)
-# echo "Executing: $KUBECONFIG_CMD"
-# eval "$KUBECONFIG_CMD"
-
-# echo "Verifying EKS cluster connectivity..."
-# if kubectl get nodes > /dev/null 2>&1; then
-#     echo "✅ Successfully connected to EKS cluster!"
-#     kubectl get nodes
-# else
-#     echo "❌ Failed to connect to EKS cluster."
-#     exit 1
-# fi
-
-# ---------------------------------------------------------------
-# STEP 4: Create AWS Data Plane (Redis, RDS, SQS, etc.)
-# ---------------------------------------------------------------
-echo
-echo "==============================="
-echo "STEP 4: Create AWS Data Plane using Terraform"
+echo "STEP 2: Create AWS Data Plane using Terraform"
 echo "==============================="
 cd "$SCRIPT_DIR/02_microservice_dataplane/01_AWS_Data_Plane_terraform-manifests"
 terraform init
@@ -71,7 +38,11 @@ echo "============================================================"
 echo "  ✅ All infrastructure created successfully!"
 echo "============================================================"
 echo "  - VPC"
-echo "  - EKS Cluster + Addons (LBC, EBS CSI, ExternalDNS, etc.)"
-# echo "  - Kubeconfig configured"
+echo "  - EKS Cluster + Addons"
+echo "  - Karpenter Terraform + NodePools"
+echo "  - Kubeconfig configured"
 echo "  - AWS Data Plane (Redis, RDS, SQS, etc.)"
+echo
+echo "Note: the standalone Metrics Server Terraform stack is not called here."
+echo "It overlaps with the metrics-server addon already declared in the EKS add-ons layer."
 echo "============================================================"

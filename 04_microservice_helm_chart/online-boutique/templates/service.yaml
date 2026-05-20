@@ -1,0 +1,20 @@
+{{- range $name, $svc := .Values.services }}
+{{- if and $svc.enabled (ne (default true $svc.service.enabled) false) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "ob.labels" (dict "name" $name "component" "service" "root" $) | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "ob.selectorLabels" (dict "name" $name "root" $) | nindent 4 }}
+  ports:
+    - name: {{ default "grpc" $svc.port.name }}
+      port: {{ default $svc.port.containerPort $svc.port.servicePort }}
+      targetPort: {{ $svc.port.containerPort }}
+      protocol: {{ default "TCP" $svc.port.protocol }}
+{{- end }}
+{{- end }}

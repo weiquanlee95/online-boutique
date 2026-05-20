@@ -7,32 +7,44 @@ resources:
   - adservice/02_configmap.yaml
   - adservice/03_deployment.yaml
   - adservice/04_clusterip_service.yaml
+  - adservice/05_pod_disruption_budget.yaml
+  - adservice/06_horizontal_pod_autoscaler.yaml
   # cartservice
   # - cartservice/01_service_account.yaml
   # - cartservice/02_configmap.yaml
   - cartservice/03_deployment.yaml
+  - cartservice/05_pod_disruption_budget.yaml
+  - cartservice/06_horizontal_pod_autoscaler.yaml
   # - cartservice/04_clusterip_service.yaml
   # checkoutservice
   - checkoutservice/01_service_account.yaml
   - checkoutservice/02_configmap.yaml
   - checkoutservice/03_deployment.yaml
   - checkoutservice/04_clusterip_service.yaml
+  - checkoutservice/05_pod_disruption_budget.yaml
+  - checkoutservice/06_horizontal_pod_autoscaler.yaml
   # currencyservice
   - currencyservice/01_service_account.yaml
   - currencyservice/02_configmap.yaml
   - currencyservice/03_deployment.yaml
   - currencyservice/04_clusterip_service.yaml
+  - currencyservice/05_pod_disruption_budget.yaml
+  - currencyservice/06_horizontal_pod_autoscaler.yaml
   # emailservice
   - emailservice/01_service_account.yaml
   - emailservice/02_configmap.yaml
   - emailservice/03_deployment.yaml
   - emailservice/04_clusterip_service.yaml
+  - emailservice/05_pod_disruption_budget.yaml
+  - emailservice/06_horizontal_pod_autoscaler.yaml
   # frontend
   - frontend/01_service_account.yaml
   - frontend/02_configmap.yaml
   - frontend/03_deployment.yaml
   - frontend/04_clusterip_service.yaml
   - frontend/05_ingress.yaml
+  - frontend/06_pod_disruption_budget.yaml
+  - frontend/07_horizontal_pod_autoscaler.yaml
   # loadgenerator
   - loadgenerator/01_service_account.yaml
   - loadgenerator/02_configmap.yaml
@@ -43,18 +55,26 @@ resources:
   - paymentservice/02_configmap.yaml
   - paymentservice/03_deployment.yaml
   - paymentservice/04_clusterip_service.yaml
+  - paymentservice/05_pod_disruption_budget.yaml
+  - paymentservice/06_horizontal_pod_autoscaler.yaml
   # productcatalogservice
   - productcatalogservice/01_service_account.yaml
   - productcatalogservice/02_configmap.yaml
   - productcatalogservice/03_deployment.yaml
   - productcatalogservice/04_clusterip_service.yaml
+  - productcatalogservice/05_pod_disruption_budget.yaml
+  - productcatalogservice/06_horizontal_pod_autoscaler.yaml
   # recommadationservice
   - recommadationservice/01_service_account.yaml
   - recommadationservice/02_configmap.yaml
   - recommadationservice/03_deployment.yaml
   - recommadationservice/04_clusterip_service.yaml
+  - recommadationservice/05_pod_disruption_budget.yaml
+  - recommadationservice/06_horizontal_pod_autoscaler.yaml
   # shippingservice
   - shippingservice/01_service_account.yaml
   - shippingservice/02_configmap.yaml
   - shippingservice/03_deployment.yaml
   - shippingservice/04_clusterip_service.yaml
+  - shippingservice/05_pod_disruption_budget.yaml
+  - shippingservice/06_horizontal_pod_autoscaler.yaml

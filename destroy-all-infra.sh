@@ -1,7 +1,28 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+wait_for_karpenter_nodes_termination() {
+    local attempts=30
+    local interval=10
+    local remaining
+
+    for ((i=1; i<=attempts; i++)); do
+        remaining=$(kubectl get nodes -l karpenter.k8s.aws/ec2nodeclass=default-ec2nodeclass --no-headers 2>/dev/null | wc -l | tr -d ' ')
+        if [ "$remaining" = "0" ]; then
+            echo "✅ No Karpenter nodes remaining"
+            return 0
+        fi
+
+        echo "Waiting for Karpenter nodes to terminate... ($remaining remaining, attempt $i/$attempts)"
+        sleep "$interval"
+    done
+
+    echo "⚠️  Karpenter nodes still remain after waiting. Proceeding with Terraform destroy may fail."
+    kubectl get nodes -l karpenter.k8s.aws/ec2nodeclass=default-ec2nodeclass || true
+    return 1
+}
 
 echo "============================================================"
 echo "  Online Boutique - Full Infrastructure Destroy"
@@ -18,6 +39,22 @@ if kubectl cluster-info > /dev/null 2>&1; then
     cd "$SCRIPT_DIR/03_microservice_manifests"
     kubectl delete -k . --ignore-not-found
     echo "✅ Kubernetes manifests deleted!"
+
+    echo
+    echo "==============================="
+    echo "STEP 1.1: Delete Karpenter Kubernetes Manifests"
+    echo "==============================="
+    cd "$SCRIPT_DIR/01_EKS_cluster_environment/04_KARPENTER_k8s-manifests"
+    kubectl delete -f 03_nodepool_spot.yaml --ignore-not-found
+    kubectl delete -f 02_nodepool_ondemand.yaml --ignore-not-found
+    kubectl delete -f 01_ec2nodeclass.yaml --ignore-not-found
+    echo "✅ Karpenter manifests deleted!"
+
+    echo
+    echo "==============================="
+    echo "STEP 1.2: Wait for Karpenter Nodes to Drain"
+    echo "==============================="
+    wait_for_karpenter_nodes_termination || true
 else
     echo "⚠️  Cannot connect to cluster, skipping manifest cleanup"
 fi
@@ -35,16 +72,15 @@ terraform destroy -auto-approve
 echo "✅ AWS Data Plane destroyed!"
 
 # ---------------------------------------------------------------
-# STEP 3: Destroy EKS Cluster
+# STEP 3: Destroy Cluster Environment
 # ---------------------------------------------------------------
 echo
 echo "==============================="
-echo "STEP 3: Destroy EKS Cluster using Terraform"
+echo "STEP 3: Destroy Cluster Environment"
 echo "==============================="
-cd "$SCRIPT_DIR/01_EKS_cluster_environment/02_EKS_terraform-manifests_with_addons"
-terraform init
-terraform destroy -auto-approve
-echo "✅ EKS Cluster destroyed!"
+cd "$SCRIPT_DIR/01_EKS_cluster_environment"
+./destroy-cluster-with-karpenter.sh
+echo "✅ Cluster environment destroyed!"
 
 # ---------------------------------------------------------------
 # STEP 4: Clean up orphaned EKS security groups in VPC
@@ -79,17 +115,6 @@ else
 fi
 
 # ---------------------------------------------------------------
-# STEP 5: Destroy VPC
-# ---------------------------------------------------------------
-echo
-echo "==============================="
-echo "STEP 5: Destroy VPC using Terraform"
-echo "==============================="
-cd "$SCRIPT_DIR/01_EKS_cluster_environment/01_VPC_terraform-manifests"
-terraform init
-terraform destroy -auto-approve
-echo "✅ VPC destroyed!"
-
 # ---------------------------------------------------------------
 # Done
 # ---------------------------------------------------------------
@@ -99,6 +124,5 @@ echo "  ✅ All infrastructure destroyed successfully!"
 echo "============================================================"
 echo "  - Kubernetes manifests deleted"
 echo "  - AWS Data Plane (Redis, RDS, SQS, etc.) destroyed"
-echo "  - EKS Cluster destroyed"
-echo "  - VPC destroyed"
+echo "  - Cluster environment destroyed via destroy-cluster-with-karpenter.sh"
 echo "============================================================"

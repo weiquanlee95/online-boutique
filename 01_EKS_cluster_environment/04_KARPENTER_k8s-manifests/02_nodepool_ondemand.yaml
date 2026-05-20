@@ -37,7 +37,7 @@ spec:
         # Karpenter can only launch nodes in AZs with configured VPC subnets
         - key: topology.kubernetes.io/zone
           operator: In
-          values: ["us-east-1a", "us-east-1b", "us-east-1c"]  
+          values: ["ap-southeast-1a", "ap-southeast-1b", "ap-southeast-1c"]  
   # Cluster-wide max scaling limit
   limits:
     cpu: "50"

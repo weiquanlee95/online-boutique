@@ -14,7 +14,7 @@ cluster_endpoint_public_access = true
 cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
 
 # EKS Node Group Configuration
-node_instance_types = ["t3.medium"] # Replace with desired types
+node_instance_types = ["t3.small"] # Replace with desired types
 node_capacity_type = "ON_DEMAND"   # or "SPOT"
 node_disk_size = 20
 

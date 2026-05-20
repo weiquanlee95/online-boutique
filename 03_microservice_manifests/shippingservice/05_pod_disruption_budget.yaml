@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: shippingservice-pdb
+  namespace: default
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: shippingservice
+      app.kubernetes.io/instance: shippingservice
+      app.kubernetes.io/component: service
+      app.kubernetes.io/owner: online-boutique
